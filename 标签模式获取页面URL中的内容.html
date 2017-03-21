@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html ng-app="modeApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>标签模式</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.js"></script>
+		<style>
+			.frame {
+				padding: 5px 8px;
+				margin: 0px;
+				font-size: 12px;
+				width: 320px;
+				background-color: #eee;
+			}
+			.frame div {
+				margin: 5px 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="frame" ng-controller="labelCtrl">
+			<div>查询字符: {{search}}</div>
+			<div>页面路径: {{path}}</div>
+			
+			<div ng-controller="h5Ctrl">
+				<div> 完整地址: {{absUrl}}</div>
+				<div>hash片段: {{hash}}</div>
+			</div>
+		</div>
+		
+		<script>
+			var app = angular.module('modeApp', []);
+			app.config(function($locationProvider) {
+				$locationProvider.html5Mode(false);
+				$locationProvider.hashPrefix('!!');
+			})
+			.controller('labelCtrl', ['$scope','$location',function($scope,$location) {
+				$scope.search = $location.search();
+				$scope.path = $location.path();
+			}]);
+			app.config(function($locationProvider) {
+				$locationProvider.html5Mode(true);
+				$locationProvider.hashPrefix('!!!');
+			})
+			.controller('h5Ctrl', ['$scope','$location',function($scope,$location) {
+				$scope.absUrl = $location.absUrl();
+				$scope.hash = $location.hash();
+			}])
+		</script>
+	</body>
+</html>

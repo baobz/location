@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html ng-app="localApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>location</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.js"></script>
+		<style>
+			.frame {
+				padding: 5px 8px;
+				margin: 0px;
+				font-size: 12px;
+				width: 420px;
+				background-color: #eee;
+			}
+			.frame div {
+				margin: 3px 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="frame" ng-controller="localCtrl">
+			<div>绝对地址: {{absUrl}}</div>
+			<div>协议名称: {{protocol}}</div>
+			<div>请求主机: {{host}}</div>
+			<div>请求端口: {{port}}</div>
+			<br/>
+			
+			<a href="#/ng_change.html">链接</a>
+			<div>页面地址: {{url}}</div>
+			<div>hash片段: {{hash}}</div>
+			<div>查询字符: {{search}}</div>
+			<div>页面路径: {{path}}</div>
+			<button ng-click="change">修改</button>
+			<br/>
+			
+			<div ng-controller="urlCtrl">
+				<div>当前URL: {{current}}</div>
+				<div>上页URL: {{previous}}</div>
+			</div>
+			<br/>
+			
+			<div ng-controller="tipCtrl">
+				<div>当前状态1: {{tip_a}}</div>
+				<div>当前URL: {{current}}</div>
+				<hr />
+				<div>当前状态2: {{tip_b}}</div>
+				<div>上页URL: {{previous}}</div>
+			</div>
+		</div>
+		
+		<script>
+			angular.module('localApp', [])
+			.controller('localCtrl', ['$scope','$location', function($scope,$location) {
+				$scope.absUrl = $location.absUrl();
+				$scope.protocal = $location.protocol();
+				$scope.host = $location.host();
+				$scope.port = $location.port();
+				
+				$scope.url = $location.url();
+				$scope.hash = $location.hash();
+				$scope.search = $location.search();
+				$scope.path = $location.path();
+				
+				$scope.change = function() {
+					$location.search({c: '3', d: '4'});
+				}
+			}])
+			.controller('urlCtrl', ['$rootScope','$window','$location','$scope', function($rootScope,$window,$location,$scope) {
+				$rootScope.$on('$locationChangeStart', function(evt, current, previous) {
+					$scope.current = current;
+					$scope.previous = previous;
+				})
+			}])
+			.controller('tipCtrl',['$rootScope', '$window', '$location', '$log', '$scope', function($rootScope,$window,$location,$log,$scope) {
+				$rootScope.$on('$locationChangeStart', function(evt,current,previous) {
+					$scope.tip_a = "URL地址即将发生改变!";
+					var yn = $window.confirm('确定真的要离开吗?');
+					if(yn) {
+						$location.path('/change');
+						return;
+					}
+					evt.preventDefault();
+					$scope.tip_b = "用户取消了URL的改变!";
+					$scope.current = current;
+					$scope.previous = previous;
+					return;
+				});
+				$rootScope.$on('$locationChangeSuccess', function(evt,current,previous) {
+					$scope.tip_b = "URL地址改变操作完成!";
+					$scope.current = current;
+					$scope.previous = previous;
+				});
+			}])
+		</script>
+	</body>
+</html>
